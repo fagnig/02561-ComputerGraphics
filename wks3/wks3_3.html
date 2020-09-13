@@ -1,0 +1,32 @@
+<html>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+
+<style>
+p {
+    margin: 0px 25%;
+  }
+</style>
+
+<body>
+  <center>
+    <a href="../index.html">Back to index</a></br>
+
+    <h1>Reflection on affine transform theory</h1>
+    <h3>Matrices used in part 1:</h3>
+    <p>A model-view matrix is constructed from a rotation-matrix (Angel 4.9.3), as no offset is required to show the wireframe cube in an isometric view. The matrix rotates the perspective 45 degrees around the x and y axis to achieve the isometric perspective.
+      This matrix is created through eye-point positioning, which requires three three-dimensional vectors. A vector defining the point where the "camera" should be located, a vector defining what the camera should be looking at, and a vector defining which way is up for the camera.
+      The matrix is constructed through the use of the lookAt() function (Angel 5.3.3).</p>
+    <p>The eye-point is calculated as a point on a sphere with a radius of 0.8.</p>
+    <p>The at-point is the origin (0,0,0).</p>
+    <p>The up-point is positive y (0,1,0).</p>
+    <p>The thing that varies when space is pressed is the eye-point, the angles used to calculate the point on the sphere is changed.</p>
+    
+    <h3>Matrices used in part 2:</h3>
+    <p>A model-view matrix is again constructed through the eye-point positioning method.</p>
+    <p>The difference is, this time a perspective matrix is concatenated onto it.</p>
+    <p>A perspective projection matrix is set up using the perspective() function (Angel 1.6.2), taking a field of view, an aspect ratio and a near and far z position.</p>
+  </center>
+</body>
+</html>
