@@ -150,9 +150,6 @@ function onChangeSubdivision()
 
   var vNormal = gl.getAttribLocation(program, "vNormal");
   gl.vertexAttribPointer(vNormal, 3, gl.FLOAT, false, 0, numPoints.length);
-  alert(numPoints.length)
-  alert(numNormals.length)
-  alert(numPoints.concat(numNormals).length)
   gl.enableVertexAttribArray(vNormal);
 }
 
