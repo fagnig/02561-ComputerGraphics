@@ -1,0 +1,40 @@
+<html>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+
+<style>
+p {
+    margin: 0px 25%;
+  }
+</style>
+
+<body>
+  <center>
+    <a href="../index.html">Back to index</a></br>
+
+    <h1>Part 6</h1>
+    <h3>What is the difference between Phong shading and Phong lighting (the Phong reflection model)?:</h3>
+    <p>Phong lighting is a model of local illumination. It is the calculation of material-specified values, such as specular, diffuse, ambient and shininess. Phong shading is the use of interpolated normals to calculate color values. They are often used together, and the entire Phong lighting model is also often simply called "Phong shading".</p>
+
+    <h3>What is the difference between flat shading, Gouraud shading, and Phong shading? List pros and cons of each.:</h3>
+    <p>Flat shading is the fastest and simplest to implement, Gouraud is slightly slower, but gives a nicer result, whereas Phong is the slowest (as each calculation is made per-fragment) however it gives far better results, especially for larger triangles.</p>
+
+    <h3>What is the difference between a directional light and a point light?</h3>
+    <p>When using lights, one has to calculate the angle of incidence with the normal, meaning that each normal will have a slightly different shading applied to it. When using a point light, this angle will be slightly different for each normal. A directional light can be thought of as a point light that is extremely far away, and as such the angle is identical over all normals.</p>
+    
+    <h3>Does the eye position influence the shading of an object in any way?</h3>
+    <p>The eye position determines where the highlights are.</p>
+    
+    <h3>What is the effect of setting the specular term to (0, 0, 0)?</h3>
+    <p>This will lead to there being no highlights on the surfaces.</p>
+
+    <h3>What is the effect of increasing the shininess exponent (𝛼𝛼)?</h3>
+    <p>It makes the highlights more focused </p>
+    
+    <h3>In what coordinate space did you compute the lighting?</h3>
+    <p>The lighting is computed in eye-space</p>
+
+  </center>
+</body>
+</html>

@@ -26,7 +26,7 @@ p {
     <h3>Matrices used in part 2:</h3>
     <p>A model-view matrix is again constructed through the eye-point positioning method.</p>
     <p>The difference is, this time a perspective matrix is concatenated onto it.</p>
-    <p>A perspective projection matrix is set up using the perspective() function (Angel 1.6.2), taking a field of view, an aspect ratio and a near and far z position.</p>
+    <p>A perspective projection matrix is set up using the perspective() function (Angel 1.6.2), taking a field of view, an aspect ratio and a near and far z position. These matrices are then concatenated together, first applying the perspective matrix, then the model view matrix.</p>
   </center>
 </body>
 </html>

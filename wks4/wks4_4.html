@@ -1,0 +1,84 @@
+<html>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="wks4_4.js"></script>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+  attribute vec4 vPosition;
+  attribute vec3 vNormal;
+  uniform mat4 view;
+  uniform mat4 proj;
+
+  uniform vec3 lightDir;
+  uniform vec3 lightEm;
+
+  uniform vec3 ambiProduct;
+  uniform vec3 diffProduct;
+  uniform vec3 specProduct;
+  uniform float shininess;
+
+  varying vec4 fColor;
+
+  void main()
+  {
+    vec3 pos = -(view * vPosition).xyz;
+    vec3 L = normalize(lightDir.xyz);
+    vec3 E = normalize(pos);
+    vec3 H = normalize(L + E);
+    vec3 norm = (view * vec4(vNormal, 1.0)).xyz;
+    vec3 N = normalize(norm);
+
+    float ldotn = max(-dot(L, N), 0.0);
+
+    vec3 ambient = ambiProduct;
+    vec3 diffuse = max(-dot(L, N), 0.0) * diffProduct;
+    vec3 specular = pow(max(dot(N, H), 0.0), shininess) * specProduct;
+  
+    if (dot(L, N) < 0.0) {
+      specular = vec3(0.0,0.0,0.0);
+    }
+
+    vec3 light = ambient + diffuse + specular;
+    fColor = vec4(light, 1.0);
+
+    gl_Position = proj * view * vPosition;
+  }
+</script>
+<script id="fragment-shader" type="x-shader/x-fragment">
+  precision mediump float;
+
+  varying vec4 fColor;
+
+  void main()
+  {
+    gl_FragColor = fColor;
+  }
+</script>
+
+<body>
+  <center>
+    <a href="../index.html">Back to index</a></br>
+
+    <canvas id="gl-canvas" width="512" height="512">
+    <!-- The following message is displayed if the browser doesn’t
+    -- support HTML5 -->
+    Sorry; your web browser does not support HTML5’s canvas element.
+    </canvas>
+
+    <p>Press 'Up' and 'Down' to change subdivision levels.</p> 
+    <p id="perspectiveinfo">Current subdivision: 3</p>
+    <label for="matShiny">Material Shininess</label>
+    <input type="range" min="1" max="100" value="50" class="slider" id="matShiny"></br>
+    <label for="lightem">Light emission</label>
+    <input type="color" id="lightem" name="lightem", value="#000000"></br>
+    <label for="matAmbi">Material ambient</label>
+    <input type="color" id="matAmbi" name="matAmbi", value="#333333"></br>
+    <label for="matDiff">Material diffuse</label>
+    <input type="color" id="matDiff" name="matDiff", value="#666666"></br>
+    <label for="matSpec">Material specular</label>
+    <input type="color" id="matSpec" name="matSpec", value="#CCCCCC"></br>
+
+  </center>
+</body>
+</html>
