@@ -17,7 +17,7 @@
   void main()
   {
     vpos = view * vPosition;
-    vnorm = view * vec4(vNormal, 1.0);
+    vnorm = normalize(vPosition);
 
     gl_Position = proj * view * vPosition;
   }
@@ -26,6 +26,7 @@
   precision mediump float;
 
   uniform mat4 view;
+  uniform mat4 proj;
 
   uniform vec3 ambiProduct;
   uniform vec3 diffProduct;
@@ -45,12 +46,13 @@
     vec3 E = normalize(vpos.xyz);
     vec3 H = normalize(L + E);
     vec3 N = normalize(vnorm.xyz);
+    vec3 R = normalize(-reflect(L,N));
 
     vec3 ambient = ambiProduct;
-    vec3 diffuse = max(dot(L, N), 0.0) * diffProduct;
-    vec3 specular = max(pow(max(dot(N, H), 0.0), shininess) * specProduct,0.0);
+    vec3 diffuse = max(dot(R, N), 0.0) * diffProduct;
+    vec3 specular = pow(max(dot(R, N), 0.0), 0.3*shininess) * specProduct;
 
-    if (dot(L, N) < 0.0) {
+    if (dot(R, N) <= 0.0) {
       specular = vec3(0.0,0.0,0.0);
     }
 
@@ -73,6 +75,8 @@
     <p id="perspectiveinfo">Current subdivision: 3</p>
     <label for="matShiny">Material Shininess</label>
     <input type="range" min="1" max="100" value="50" class="slider" id="matShiny"></br>
+    <label for="lightHeight">Light height</label>
+    <input type="range" min="-10" max="10" value="0" class="slider" id="lightHeight"></br>
     <label for="lightem">Light emission</label>
     <input type="color" id="lightem" name="lightem", value="#FFFFFF"></br>
     <label for="matAmbi">Material ambient</label>

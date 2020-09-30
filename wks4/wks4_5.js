@@ -84,6 +84,7 @@ function loadListeners()
   addEventListener( "keydown", doKeyDown);
 
   document.getElementById("matShiny").addEventListener("input", onChangeShiny);
+  document.getElementById("lightHeight").addEventListener("input", onChangeLightHeight);
   document.getElementById("lightem").addEventListener("input", onChangeLightEm);
   document.getElementById("matAmbi").addEventListener("input", onChangeMatAmbi);
   document.getElementById("matDiff").addEventListener("input", onChangeMatDiff);
@@ -127,7 +128,7 @@ window.onload = function()
   var lightDirloc = gl.getUniformLocation(program, "lightDir");
   gl.uniform3fv(lightDirloc, flatten(vec3(0.0,0.0,-1.0)) );
   var lightEmloc = gl.getUniformLocation(program, "lightEm");
-  gl.uniform3fv(lightEmloc, flatten(vec3(1.0,1.0,1.0)) );
+  gl.uniform3fv(lightEmloc, flatten(vec3(0.5,0.5,0.5)) );
   var shininessloc = gl.getUniformLocation(program, "shininess");
   gl.uniform1f(shininessloc, 50.0 );
   var ambiProduct = gl.getUniformLocation(program, "ambiProduct");
@@ -194,6 +195,14 @@ function onChangeShiny()
 
   var shininessloc = gl.getUniformLocation(program, "shininess");
   gl.uniform1f(shininessloc, val );
+}
+
+function onChangeLightHeight()
+{
+  var val = event.target.value;
+
+  var lightDirloc = gl.getUniformLocation(program, "lightDir");
+  gl.uniform3fv(lightDirloc, flatten(vec3(0.0,val,-1.0)) );
 }
 
 function onChangeLightEm()
