@@ -6,6 +6,7 @@
 <script type="text/javascript" src="wks5_3.js"></script>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
+  precision mediump float;
   attribute vec3 vPosition;
   attribute vec3 vNormal;
   attribute vec4 vColor;
@@ -15,22 +16,54 @@
   uniform vec3 lightDir;
   uniform vec3 lightEm;
 
-  varying vec4 fColor;
+  uniform float normals;
+
+  varying vec4 vpos;
+  varying vec3 vnorm;
+  varying vec4 vcol;
 
   void main()
   {
+    vpos = view * vec4(vPosition,1.0);
+    if(normals > 0.0) {
+      vnorm = normalize(vNormal);
+    } else {
+      vnorm = normalize(vPosition);
+    }
+    vcol = vColor;
+
     gl_Position = proj * view * vec4(vPosition,1.0);
-    fColor = vec4(0.5,0.5,0.5,1.0);
   }
 </script>
 <script id="fragment-shader" type="x-shader/x-fragment">
   precision mediump float;
 
-  varying vec4 fColor;
+  uniform mat4 view;
+  uniform mat4 proj;
+
+  varying vec4 vpos;
+  varying vec3 vnorm;
+  varying vec4 vcol;
 
   void main()
   {
-    gl_FragColor = fColor;
+    vec3 eyelight = (view * vec4(0.0, 3.0, -1.0, 1.0)).xyz;
+    vec3 L = normalize(eyelight);
+    vec3 E = normalize(vpos.xyz);
+    vec3 H = normalize(L + E);
+    vec3 N = normalize(vnorm);
+    vec3 R = normalize(-reflect(L,N));
+
+    vec3 ambient = vec3(0.2, 0.2, 0.2);
+    vec3 diffuse = max(dot(R, N), 0.0) * vec3(0.4, 0.4, 0.4);
+    vec3 specular = pow(max(dot(R, N), 0.0), 0.3*20.0) * vec3(0.5, 0.5, 0.5);
+
+    if (dot(R, N) <= 0.0) {
+      specular = vec3(0.0,0.0,0.0);
+    }
+
+    vec3 light = ambient + diffuse + specular;
+    gl_FragColor = normalize(vcol * vec4(light, 1.0));
   }
 </script>
 
@@ -43,6 +76,16 @@
     -- support HTML5 -->
     Sorry; your web browser does not support HTML5’s canvas element.
     </canvas>
+    </br>
+    <input type="checkbox" id="normals" name="normals">
+    <label for="normals">Use proper surface normals?</label>
+    
+    <p>Use the above checkbox to toggle between proper surface normals and position based normals.</p>
+    <p>The proper surface normals are supplied in the OBJ file, however they can also be calculated by taking the vector cross products of two edges of a triangle.</p>
+    <p>The position based normals are simply the position of the vertices normalized.</p>
+
+    <p>As seen when the button is toggled, the object looks smoother, and is much more realisticly shaded, whereas the position based normals make the object look very flat, and almost like if it was made out of a cloudy gemstone-esque material.</p>
+
   </center>
 </body>
 </html>

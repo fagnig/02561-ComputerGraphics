@@ -38,6 +38,8 @@ window.onload = function()
   var canv = document.getElementById("gl-canvas");
   gl = WebGLUtils.setupWebGL(canv);
 
+  document.getElementById("normals").addEventListener("input", onChangeNormals);
+
   gl.viewport(0, 0, canv.width, canv.height);
   gl.clearColor(0.3921, 0.5843, 0.9294, 1.0);
   gl.enable(gl.DEPTH_TEST)
@@ -45,32 +47,22 @@ window.onload = function()
 
   program = initShaders(gl, "vertex-shader", "fragment-shader")
   gl.useProgram(program);
+  gl.program = program;
 
-  program.a_Position = gl.getAttribLocation(program, 'vPosition');
-  //program.a_Normal = gl.getAttribLocation(program, 'vNormal');
-  //program.a_Color = gl.getAttribLocation(program, 'vColor');
+  gl.program.a_Position = gl.getAttribLocation(program, 'vPosition');
+  gl.program.a_Normal = gl.getAttribLocation(program, 'vNormal');
+  gl.program.a_Color = gl.getAttribLocation(program, 'vColor');
 
   var model = initVertexBuffers(gl, program);
   // Start reading the OBJ file
-  readOBJFile('./teapot.obj', gl, model, 60, true);
+  readOBJFile('./teapot.obj', gl, model, 0.3, true);
 
   var aratio = canv.width / canv.height;
   var projMat = perspective(fov, aratio, znear, zfar);
   var projloc = gl.getUniformLocation(program, "proj");
   gl.uniformMatrix4fv(projloc, false, flatten(projMat) );
 
-  while(true) 
-  {
-    if(!g_objDoc) continue;
-    if(!g_objDoc.isMTLComplete()) continue;
-    
-    // OBJ and all MTLs are available
-    g_drawingInfo = onReadComplete(gl, model, g_objDoc);
-
-    if( !!g_drawingInfo ) break;
-  }
-
-  render(vertbuffer)
+  //render(vertbuffer)
 }
 
 function render()
@@ -129,6 +121,10 @@ function onReadOBJFile(fileString, fileName, gl, o, scale, reverse) {
     return;
   }
   g_objDoc = objDoc;
+
+  g_drawingInfo = onReadComplete(gl, o, g_objDoc);
+
+  render();
 } 
 
 function onReadComplete(gl, model, objDoc) {
@@ -151,3 +147,11 @@ function onReadComplete(gl, model, objDoc) {
 
   return drawingInfo;
 } 
+
+function onChangeNormals()
+{
+  var val = event.target.checked ? 1.0 : 0.0;
+  
+  var normalLoc = gl.getUniformLocation(program, "normals");
+  gl.uniform1f(normalLoc, val);
+}
