@@ -1,0 +1,45 @@
+<html>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="wks6_1.js"></script>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+  attribute vec3 vPosition;
+  attribute vec2 vTexCoord;
+  uniform mat4 proj;
+
+
+
+  varying vec2 fTexCoord;
+
+  void main()
+  {
+    fTexCoord = vTexCoord;
+    gl_Position = proj * vec4(vPosition, 1.0);
+  }
+</script>
+<script id="fragment-shader" type="x-shader/x-fragment">
+  precision mediump float;
+  uniform sampler2D texmap;
+
+  varying vec2 fTexCoord;
+  void main()
+  {
+    gl_FragColor = texture2D(texmap, fTexCoord);
+    //gl_FragColor = vec4(0.9, 0.9, 0.9, 1.0);
+  }
+</script>
+
+<body>
+  <center>
+    <a href="../index.html">Back to index</a></br>
+
+    <canvas id="gl-canvas" width="512" height="512">
+    <!-- The following message is displayed if the browser doesn’t
+    -- support HTML5 -->
+    Sorry; your web browser does not support HTML5’s canvas element.
+    </canvas>
+  </center>
+</body>
+</html>
