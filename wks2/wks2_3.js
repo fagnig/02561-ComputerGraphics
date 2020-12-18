@@ -211,7 +211,9 @@ function onClickClear() {
 
   clearcol = [r/255, g/255, b/255, 1.0];
   gl.clearColor(clearcol[0],clearcol[1],clearcol[2],clearcol[3]);
-  index = 0;
+  n_points = 0;
+  n_tris = 0;
+  n_circles = 0;
 }
 
 function onChangePointCol()

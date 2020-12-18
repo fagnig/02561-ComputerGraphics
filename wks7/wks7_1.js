@@ -52,20 +52,6 @@ function go()
   tetrahedron(va,vb,vc,vd,timestosubdivide)
 }
 
-function create2DTexture(gl, image) {
-  var ext = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-  var texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  // gl.generateMipmap(gl.TEXTURE_2D);
-  var max_anisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-  gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, max_anisotropy);
-  return texture;
-}
-
 var vertbuffer
 
 var radius = 3;
@@ -93,14 +79,28 @@ function vec3_getEye(rotation) {
 function mat4_getModelViewMatrix(rotation) {
   return lookAt(vec3_getEye(rotation), at, up);
 }
-var runonce = false;
-var image = document.createElement('img');
-image.crossorigin = 'anonymous';
-image.onload = function ()
+
+function enumToEnum(gl, ins)
 {
-  run();
+  switch(ins){
+    case "+X" : return gl.TEXTURE_CUBE_MAP_POSITIVE_X;
+    case "-X" : return gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
+    case "+Y" : return gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
+    case "-Y" : return gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+    case "+Z" : return gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
+    case "-Z" : return gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
+  }
 }
-image.src = 'earth_resized.jpg';
+
+var mapsloaded = 0;
+var cubemap = [
+ {tex : 'textures/cm_left.png',   map : "+X"},
+ {tex : 'textures/cm_right.png',  map : "-X"},
+ {tex : 'textures/cm_top.png',    map : "-Y"},
+ {tex : 'textures/cm_bottom.png', map : "+Y"},
+ {tex : 'textures/cm_back.png',   map : "+Z"},
+ {tex : 'textures/cm_front.png',  map : "-Z"}
+];
 
 function run()
 {
@@ -129,13 +129,27 @@ function run()
   var projloc = gl.getUniformLocation(program, "proj");
   gl.uniformMatrix4fv(projloc, false, flatten(projMat) );
 
-  var tex = create2DTexture(gl, image);
-
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-
   var lightloc = gl.getUniformLocation(program, "light");
   gl.uniform3fv(lightloc, flatten(normalize(projMat * light)));
+
+  var texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+
+  cubemap.forEach(function(item, index)
+  {
+    gl.texImage2D(enumToEnum(gl, item.map), 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+    var image = new Image()
+    image.src = item.tex;
+    image.crossorigin = 'anonymous';
+    image.addEventListener('load', function(){
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+      gl.texImage2D(enumToEnum(gl,item.map), 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+
+    })
+  })
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
   go()
   gl.bindBuffer(gl.ARRAY_BUFFER, vertbuffer);
@@ -145,6 +159,8 @@ function run()
   render(vertbuffer)
 }
 
+window.onload = run
+
 function render()
 {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -152,8 +168,6 @@ function render()
 
   var viewloc = gl.getUniformLocation(program, "view");
   gl.uniformMatrix4fv(viewloc, false, flatten(mat4_getModelViewMatrix(rotation)) );
-
-  rotation += 0.05;
 
   requestAnimationFrame(render);
 }
