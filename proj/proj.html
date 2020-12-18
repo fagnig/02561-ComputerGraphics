@@ -1,0 +1,58 @@
+<html>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="proj.js"></script>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+  attribute vec4 vPosition;
+  attribute vec3 vColor;
+
+  varying vec4 fColor;
+
+  void main()
+  {
+    gl_PointSize = 20.0;
+    gl_Position = vPosition;
+    fColor = vec4(vColor, 1.0);
+  }
+</script>
+<script id="fragment-shader" type="x-shader/x-fragment">
+  precision mediump float;
+
+  varying vec4 fColor;
+
+  void main()
+  {
+    gl_FragColor = fColor;
+  }
+</script>
+
+<body>
+  <center>
+    <a href="../index.html">Back to index</a></br>
+
+    <canvas id="gl-canvas" width="600" height="600">
+    <!-- The following message is displayed if the browser doesn’t
+    -- support HTML5 -->
+    Sorry; your web browser does not support HTML5’s canvas element.
+    </canvas>
+    </br>
+    <button id="clear">Clear</button>
+    </br>
+    <label for="clearcol">Clear Color</label>
+    <input type="color" id="clearcol" name="clearcol", value="#6495ed">
+    </br>
+    <label for="pointcol">Draw Color</label>
+    <input type="color" id="pointcol" name="pointcol", value="#000000">
+    </br>
+    <select id="drawmode">
+      <option val=0>Point</option>
+      <option val=1>Circle</option>
+      <option val=2>Triangle</option>
+      <option val=3>Quadr. Bezier Curve</option>
+      <option val=4>Cubic Bezier Curve</option>
+    </select>
+  </center>
+</body>
+</html>
